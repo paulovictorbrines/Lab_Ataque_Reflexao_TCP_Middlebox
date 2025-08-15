@@ -1,6 +1,6 @@
 # Descrição do Código do Ataque
 
-O código usado para realizar os ataques foi obtido de um repositório público no GitHub, do usuário **moloch54**. O projeto, chamado "Ddos-TCP-Middlebox-Reflection-Attack", contém o arquivo `mra.py` para a execução do ataque. Após uma investigação, foi identificado que o autor do código é Sébastien Meniere, residente em Nancy, França, conforme informações em seu perfil no LinkedIn.
+https://github.com/moloch54/Ddos-TCP-Middlebox-Reflection-Attack
 
 O código foi muito útil para a condução dos experimentos em laboratório, permitindo a implementação prática dos conceitos do artigo científico "Weaponizing Middleboxes for TCP Reflected Amplification" de Bock et al. Com ele, foi possível replicar a técnica de **Middlebox Reflection (b)**, facilitando a compreensão e validação dos mecanismos de reflexão amplificada usando *middleboxes* sobre o protocolo TCP. Nessa técnica, o endereço IP de origem é falsificado como sendo o da vítima, fazendo com que as respostas das *middleboxes* atinjam diretamente o alvo.
 
