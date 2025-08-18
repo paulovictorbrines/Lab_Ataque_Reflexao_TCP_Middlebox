@@ -6,8 +6,11 @@ Essa estrutura possibilitou a simulação controlada do ataque e a análise deta
 
 ## Descrição do Código do Ataque
 
-Este repositório documenta o uso e a configuração do código disponível em:
+Esta seção documenta o uso e a configuração do código disponível em:
 https://github.com/moloch54/Ddos-TCP-Middlebox-Reflection-Attack
+
+![tipos_ataque_page](https://github.com/user-attachments/assets/895bf494-9bcb-4f47-acd6-c1d6d3c32e39)
+
 
 O código foi muito útil para a condução dos experimentos em laboratório, permitindo a implementação prática dos conceitos do artigo científico "Weaponizing Middleboxes for TCP Reflected Amplification" de Bock et al. Com ele, foi possível replicar a técnica de **Middlebox Reflection (b)**, facilitando a compreensão e validação dos mecanismos de reflexão amplificada usando *middleboxes* sobre o protocolo TCP. Nessa técnica, o endereço IP de origem é falsificado como sendo o da vítima, fazendo com que as respostas das *middleboxes* atinjam diretamente o alvo.
 
@@ -62,6 +65,9 @@ Um exemplo de execução seria:
 sudo python3 mra.py 300 123.4.5.6
 ```
 
+![execucao_mra](https://github.com/user-attachments/assets/930e1f6b-b577-4971-82d8-1ff4d028afc6)
+
+
 Isso executará o ataque por 300 segundos contra o IP 123.4.5.6. É importante ressaltar que o uso deste código para ataques não autorizados é ilegal e antiético. A intenção é apenas educacional e para testes em ambientes controlados.
 
 -----
@@ -76,7 +82,9 @@ O VMware Workstation é um hipervisor de desktop para Windows e Linux, que permi
 
 ## Configuração do Laboratório
 
-O ambiente do laboratório foi dividido em três cenários, todos com a mesma topologia de rede e endereços IP. Cada cenário tinha três elementos: **um alvo, um atacante e uma *middlebox*** (representada por um *firewall*).
+![topologia_lab](https://github.com/user-attachments/assets/3f935515-db36-42cb-bffc-7888d9db5589)
+
+O ambiente do laboratório foi dividido em três cenários, todos com a mesma topologia de rede e endereços IP da imagem acima. Cada cenário tinha três elementos: **um alvo, um atacante e uma *middlebox*** (representada por um *firewall*).
 
   * **Cenário 1:** Firewall com **pfSense** e o complemento **pfBlockerNG**.
   * **Cenário 2:** Firewall com **pfSense** e os softwares **Squid** e **SquidGuard**.
@@ -123,22 +131,48 @@ A configuração de rede é:
 
 ### Firewall pfSense
 
-O primeiro *firewall* usado foi o **pfSense Community Edition (CE)**, versão `2.7.2-RELEASE`. É uma distribuição de software de *firewall* de código aberto baseada no FreeBSD.
+O primeiro firewall utilizado nos experimentos foi o **pfSense Community Edition (CE)**, na versão `2.7.2-RELEASE` [^1]. Trata-se de uma distribuição de software de firewall open source, baseada no FreeBSD, que pode ser instalada em um computador físico ou em uma máquina virtual para compor um firewall dedicado em uma rede [^2].
 
-Suas especificações de hardware virtual são:
+A seguir, são apresentadas as especificações de hardware virtual atribuídas à máquina:
 
-  * **Memória RAM:** 2048 MB
-  * **Processador:** 2 vCPUs
-  * **Armazenamento:** 20 GB
-  * **Adaptadores de rede:** 1000 Mb/s (Intel Gigabit Internet 82545EM)
+- **Memória RAM:** 2048 MB  
+- **Processador:** 2 vCPUs  
+- **Armazenamento:** 20 GB  
+- **Adaptadores de rede:** 1000 Mb/s (Intel Gigabit Internet 82545EM)  
 
 A VM do pfSense foi configurada com três interfaces de rede:
 
-  * **em0:** Conectada ao segmento WAN (`10.0.0.1/24`).
-  * **em1:** Conectada ao segmento LAN (`192.168.24.100/24`).
-  * **em3:** Em modo NAT para acesso à internet.
+- **em0:** Conectada ao segmento LAN, identificado no VMware como WAN, simulando a saída das máquinas internas em direção à internet;  
+- **em1:** Conectada a outro segmento LAN, identificado como LAN, representando a interface de acesso interno ao firewall;  
+- **em3:** Configurada em modo NAT e utilizada exclusivamente para permitir o acesso à internet via conexão do computador hospedeiro, possibilitando o download de atualizações, pacotes e demais comunicações externas necessárias para a preparação do ambiente de ataque.  
 
-O **NAT Outbound** foi configurado para redirecionar o tráfego da LAN para a WAN. As regras de *firewall* da interface WAN incluíam permissões para **ICMP** (ping) de máquinas externas, acesso externo ao servidor Web do alvo e acesso irrestrito a sites, que seriam posteriormente filtrados. As regras da interface LAN continham as regras padrão de `anti-lockout` e `default allow LAN to any`.
+A configuração de rede da máquina virtual do firewall foi definida da seguinte forma:
+
+- **Hostname:** `pfSense.home.arpa`  
+- **Endereço IP WAN (em0):** `10.0.0.1/24`  
+- **Endereço IP LAN (em1):** `192.168.24.100/24`  
+- **Endereço IP INTERNET (em2):** atribuído via DHCP  
+
+Foi configurado o **NAT Outbound** para redirecionar o tráfego da rede LAN para a interface WAN, simulando a saída da rede interna para a externa por meio do firewall, conforme imagem a seguir.  
+
+<img width="1442" height="184" alt="rules_nat" src="https://github.com/user-attachments/assets/49ffa326-0630-4991-97a9-315a1b267930" />
+
+As regras de firewall configuradas para a interface **WAN** incluem:  
+
+- Uma regra que permite o recebimento de pacotes ICMP (ping) originados de máquinas externas para máquinas internas da LAN;  
+- Uma regra que permite `ping` de máquinas externas diretamente ao endereço IP da interface WAN do pfSense;  
+- Uma regra que permite o acesso externo ao servidor **Web** do alvo pela porta 80/TCP, simulando sua exposição pública;  
+- Uma regra que permite que máquinas da rede interna acessem livremente todos os sites, sendo posteriormente restringidas pelas soluções de filtragem do **pfBlockerNG** e **squidGuard**, responsáveis por bloquear domínios como `youporn.com`, `facebook.com`, `pornhub.com` e `bittorrent.com`, processadas antes dessa regra.  
+
+<img width="1152" height="333" alt="rules_wan" src="https://github.com/user-attachments/assets/6903a8bd-f9bd-4b4f-9c5c-5aeb7c7e8e5d" />
+
+Para a interface **LAN**, as regras estão configuradas conforme imagem a seguir, contendo por padrão:  
+
+- A `anti-lockout rule`, que evita o bloqueio do acesso à interface web do pfSense;  
+- A regra `default allow LAN to any`, permitindo tráfego de saída irrestrito da LAN;  
+- A regra `default allow LAN IPv6 to any`, com comportamento equivalente para tráfego IPv6.  
+
+<img width="1153" height="242" alt="rules_lan" src="https://github.com/user-attachments/assets/d028f47a-7e66-4e3e-9e52-760c1bd751a2" />
 
 #### Firewall pfSense + pfBlockerNG
 
