@@ -1,5 +1,12 @@
-# Descrição do Código do Ataque
+# Ataque de Reflexão Amplificada Explorando Middlebox – Código e Ambiente de Testes
 
+Este README descreve a configuração do ambiente experimental utilizado para a análise dos ataques de reflexão amplificada sobre TCP explorando middleboxes, abrangendo tanto a estrutura do código-fonte quanto os elementos virtuais e de rede do laboratório. Inicialmente, apresenta-se a arquitetura e o funcionamento do código de ataque, incluindo orientações de execução e informações complementares obtidas por meio de comunicação direta com seu autor. Em seguida, descreve-se o ambiente de testes construído no VMware Workstation Pro, composto por máquinas virtuais representando o atacante, o alvo e os dispositivos middlebox (firewalls pfSense e FortiGate), com suas respectivas configurações.
+
+Essa estrutura possibilitou a simulação controlada do ataque e a análise detalhada de seu comportamento frente a diferentes dispositivos intermediários, permitindo compreender de forma prática os mecanismos de reflexão amplificada e suas implicações de segurança.
+
+## Descrição do Código do Ataque
+
+Este repositório documenta o uso e a configuração do código disponível em:
 https://github.com/moloch54/Ddos-TCP-Middlebox-Reflection-Attack
 
 O código foi muito útil para a condução dos experimentos em laboratório, permitindo a implementação prática dos conceitos do artigo científico "Weaponizing Middleboxes for TCP Reflected Amplification" de Bock et al. Com ele, foi possível replicar a técnica de **Middlebox Reflection (b)**, facilitando a compreensão e validação dos mecanismos de reflexão amplificada usando *middleboxes* sobre o protocolo TCP. Nessa técnica, o endereço IP de origem é falsificado como sendo o da vítima, fazendo com que as respostas das *middleboxes* atinjam diretamente o alvo.
@@ -25,7 +32,7 @@ A escolha por esse código público se deu por sua estrutura clara e alinhamento
 
 -----
 
-# Execução do Código
+## Execução do Código
 
 Para a execução do código de ataque de reflexão amplificada sobre TCP, é preciso seguir os passos descritos no arquivo README.md do repositório. Primeiro, as dependências devem ser instaladas e configuradas. As ferramentas necessárias são:
 
@@ -59,7 +66,7 @@ Isso executará o ataque por 300 segundos contra o IP 123.4.5.6. É importante r
 
 -----
 
-# Virtualizador VMware Workstation Pro
+## Virtualizador VMware Workstation Pro
 
 Para a virtualização das máquinas virtuais (alvo, atacante e *firewalls* pfSense e FortiGate), foi usado o **VMware Workstation Pro 17 for Personal Use** (versão 17.6.3-24583834), disponível gratuitamente. Ele pode ser baixado no site oficial da VMware, mas é necessário se registrar no portal da Broadcom.
 
@@ -67,7 +74,7 @@ O VMware Workstation é um hipervisor de desktop para Windows e Linux, que permi
 
 -----
 
-# Configuração do Laboratório
+## Configuração do Laboratório
 
 O ambiente do laboratório foi dividido em três cenários, todos com a mesma topologia de rede e endereços IP. Cada cenário tinha três elementos: **um alvo, um atacante e uma *middlebox*** (representada por um *firewall*).
 
