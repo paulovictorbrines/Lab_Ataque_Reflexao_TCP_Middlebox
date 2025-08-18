@@ -4,6 +4,8 @@ Este README descreve a configuração do ambiente experimental utilizado para a 
 
 Essa estrutura possibilitou a simulação controlada do ataque e a análise detalhada de seu comportamento frente a diferentes dispositivos intermediários, permitindo compreender de forma prática os mecanismos de reflexão amplificada e suas implicações de segurança.
 
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
+
 ## Descrição do Código do Ataque
 
 Esta seção documenta o uso e a configuração do código disponível em:
@@ -34,6 +36,8 @@ Esses pacotes, ao serem processados por *middleboxes* de filtragem de conteúdo,
 A escolha por esse código público se deu por sua estrutura clara e alinhamento com a metodologia de Bock et al., o que garantiu a conformidade da implementação e permitiu focar nos aspectos experimentais e analíticos, evitando o desenvolvimento do zero.
 
 -----
+
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 
 ## Execução do Código
 
@@ -72,6 +76,8 @@ Isso executará o ataque por 300 segundos contra o IP 123.4.5.6. É importante r
 
 -----
 
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
+
 ## Virtualizador VMware Workstation Pro
 
 Para a virtualização das máquinas virtuais (alvo, atacante e *firewalls* pfSense e FortiGate), foi usado o **VMware Workstation Pro 17 for Personal Use** (versão 17.6.3-24583834), disponível gratuitamente. Ele pode ser baixado no site oficial da VMware, mas é necessário se registrar no portal da Broadcom.
@@ -79,6 +85,8 @@ Para a virtualização das máquinas virtuais (alvo, atacante e *firewalls* pfSe
 O VMware Workstation é um hipervisor de desktop para Windows e Linux, que permite criar e executar VMs com diversos sistemas operacionais sem precisar reiniciar o computador. É uma plataforma robusta e versátil, ideal para desenvolvimento, testes e simulações de software em ambientes virtuais isolados.
 
 -----
+
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 
 ## Configuração do Laboratório
 
@@ -91,6 +99,8 @@ O ambiente do laboratório foi dividido em três cenários, todos com a mesma to
   * **Cenário 3:** Firewall **FortiGate**.
 
 Os *firewalls* foram configurados para simular comportamentos típicos e também configurações incorretas, a fim de mostrar como certas escolhas podem tornar esses dispositivos vulneráveis a ataques de reflexão amplificada sobre TCP.
+
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 
 ### Máquina Alvo
 
@@ -111,6 +121,8 @@ A configuração de rede é:
   * **Gateway padrão:** `192.168.24.100`
   * **Servidor DNS:** `192.168.24.100`
 
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
+
 ### Máquina Atacante
 
 A máquina atacante foi baseada no sistema operacional **Kali Linux**, versão 2025.1. Suas especificações são:
@@ -128,6 +140,8 @@ A configuração de rede é:
   * **Endereço IP WAN:** `10.0.0.2/24`
   * **Endereço IP INTERNET:** IP via DHCP
   * **Gateway padrão:** `10.0.0.1`
+
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 
 ### Firewall pfSense
 
@@ -174,7 +188,11 @@ Para a interface **LAN**, as regras estão configuradas conforme imagem a seguir
 
 <img width="1153" height="242" alt="rules_lan" src="https://github.com/user-attachments/assets/d028f47a-7e66-4e3e-9e52-760c1bd751a2" />
 
-#### Firewall pfSense + pfBlockerNG
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
+
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
+##
+## Firewall pfSense + pfBlockerNG
 
 O **pfBlockerNG** é um pacote adicional do pfSense para bloquear domínios e IPs maliciosos. Ele usa **DNSBL** (DNS Blackhole List) e listas de IPs.
 
@@ -182,11 +200,17 @@ Para bloquear sites, foi adicionada uma regra explícita de `DROP` para pacotes 
 
 O pacote também exibe uma página de bloqueio local, mas não realiza o redirecionamento real da requisição. Como o pfBlockerNG não reflete o conteúdo para um alvo externo, ele **não foi útil para o ataque de amplificação**. O bloqueio ocorre de forma local e não interage com o destino final do tráfego.
 
-#### Firewall pfSense + Squid + SquidGuard
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
+
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
+##
+## Firewall pfSense + Squid + SquidGuard
 
 O **Squid** é um proxy de cache para a web, e o **SquidGuard** é um redirecionador de URLs que complementa o Squid. Juntos, eles permitem o bloqueio e redirecionamento de usuários para uma página de bloqueio personalizada.
 
 O SquidGuard foi o componente principal deste experimento porque permite o **redirecionamento real da requisição**, alterando a URL e enviando a página de bloqueio para o usuário. Para isso, foi criada uma lista de `target categories` no SquidGuard para os sites proibidos.
+
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 
 ### Firewall FortiGate
 
