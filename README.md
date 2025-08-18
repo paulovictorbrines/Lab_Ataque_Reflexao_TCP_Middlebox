@@ -198,7 +198,11 @@ O **pfBlockerNG** é um pacote adicional do pfSense para bloquear domínios e IP
 
 Para bloquear sites, foi adicionada uma regra explícita de `DROP` para pacotes da rede interna com destino a IPs de sites proibidos (como `youporn.com`, `pornhub.com`, etc.), obtidos de listas no pfBlockerNG.
 
+<img width="1446" height="155" alt="rule_ips_proibidos" src="https://github.com/user-attachments/assets/b0cebe52-fbb3-4343-a828-120b87dd0bef" />
+
 O pacote também exibe uma página de bloqueio local, mas não realiza o redirecionamento real da requisição. Como o pfBlockerNG não reflete o conteúdo para um alvo externo, ele **não foi útil para o ataque de amplificação**. O bloqueio ocorre de forma local e não interage com o destino final do tráfego.
+
+<img width="1293" height="223" alt="bloqueio_pfblockerng" src="https://github.com/user-attachments/assets/3a5106be-4c42-41f2-9d47-06a63efcfaa4" />
 
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 
@@ -210,25 +214,51 @@ O **Squid** é um proxy de cache para a web, e o **SquidGuard** é um redirecion
 
 O SquidGuard foi o componente principal deste experimento porque permite o **redirecionamento real da requisição**, alterando a URL e enviando a página de bloqueio para o usuário. Para isso, foi criada uma lista de `target categories` no SquidGuard para os sites proibidos.
 
+<img width="1058" height="218" alt="bloqueio_squid" src="https://github.com/user-attachments/assets/11a85cd5-acad-4508-8b9c-e31fa68097c7" />
+
+<img width="1158" height="463" alt="sites_proibidos" src="https://github.com/user-attachments/assets/0edf68a8-8c05-42c0-a4c4-b563f7638112" />
+
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 
-### Firewall FortiGate
+## Firewall FortiGate
 
-O segundo *firewall* foi o **NGFW FortiGate-VM64**, versão 7.2.0, escolhido por ser vulnerável à **CVE-2022-27491**. É uma solução comercial amplamente adotada, que oferece proteção avançada e alta performance.
+O segundo firewall utilizado nos experimentos foi o **NGFW FortiGate-VM64**, versão 7.2.0 (build 1157, 220331 - GA.F) [^1]. A escolha dessa versão se deu pelo fato de ela constar na lista de versões vulneráveis, conforme identificado pela vulnerabilidade **CVE-2022-27491** [^2][^3][^4]. Os FortiGate NGFWs oferecem proteção avançada para usuários e dados, combinando funcionalidades de segurança com alto desempenho por meio dos processadores dedicados da Fortinet, sendo uma solução comercial consolidada e amplamente adotada no mercado [^5].
 
-O FortiGate também exibe uma página de bloqueio quando um site proibido é acessado, como visto em ambientes de grandes instituições. Suas especificações de hardware virtual são:
+Instituições de grande porte, como a **Universidade de Brasília (UnB)**, adotam ativamente essa solução para garantir a segurança de suas redes. Um exemplo prático desse uso pode ser observado na imagem a seguir, que mostra a página de bloqueio exibida pelo FortiGate quando um usuário tenta acessar um site proibido. Esse teste foi realizado dentro da própria UnB, confirmando o uso efetivo do sistema pela instituição. Além disso, a mesma página pode ser visualizada na máquina alvo ao fazer o mesmo no laboratório.  
 
-  * **Memória RAM:** 2048 MB
-  * **Processador:** 1 vCPU
-  * **Armazenamento:** Não especificado
-  * **Adaptador de rede:** 10000 Mb/s (Intel Gigabit Internet 82545EM)
+<!-- IMAGEM AQUI - Página de bloqueio do FortiGate (bloqueio_fortigate) -->
 
-O FortiGate foi configurado com três interfaces de rede, replicando a topologia do pfSense:
+As especificações do ambiente virtual utilizado nos testes são apresentadas a seguir:
 
-  * **Endereço IP WAN:** `10.0.0.1/24` (port1)
-  * **Endereço IP LAN:** `192.168.24.100/24` (port2)
-  * **Endereço IP INTERNET:** IP via DHCP (port3)
+- **Memória RAM:** 2048 MB  
+- **Processador:** 1 vCPU  
+- **Armazenamento:** Não especificado  
+- **Adaptador de rede:** 10000 Mb/s (Intel Gigabit Internet 82545EM)  
 
-A opção pelo FortiGate foi motivada por ele ser mais eficaz em interceptar e responder com **páginas de bloqueio que são efetivamente enviadas ao cliente**. Diferente das soluções anteriores, ele usa **inspeção profunda de pacotes (DPI)** e responde de forma imediata, aumentando a chance de a página ser refletida para o destino falsificado nos ataques. Isso proporcionou maior controle e visibilidade sobre o tráfego, tornando-o mais adequado para os testes de segurança.
+Adotado como substituto do pfSense, o firewall **FortiGate** foi configurado com três interfaces de rede, replicando a topologia e a função atribuídas na configuração anterior. A configuração de rede foi definida da seguinte forma:
 
-As regras de *firewall* do FortiGate foram configuradas de forma similar às do pfSense, permitindo tráfego **ICMP** da WAN para a LAN e o tráfego de saída da LAN para a WAN. Um perfil de **Web Filter** foi criado para bloquear os sites proibidos e aplicado às regras de acesso da LAN.
+- **Hostname:** `FortiGate-VM64-KVM`  
+- **Endereço IP WAN:** `10.0.0.1/24` (port1)  
+- **Endereço IP LAN:** `192.168.24.100/24` (port2)  
+- **Endereço IP INTERNET:** atribuído via DHCP (port3)  
+
+Diante da constatação de que tanto o pfBlockerNG quanto o Squid com SquidGuard não foram capazes de refletir páginas de bloqueio até a vítima durante os testes, foi necessário buscar uma alternativa mais adequada para os objetivos do experimento. Nesse contexto, optou-se por utilizar o FortiGate, uma solução de firewall de próxima geração desenvolvida pela Fortinet, que se mostrou mais eficaz para o cenário proposto.
+
+O **FortiGate** foi escolhido por oferecer um mecanismo de filtragem de conteúdo mais integrado ao fluxo de rede, com capacidade real de interceptar conexões e responder diretamente com páginas de bloqueio personalizadas, que são efetivamente enviadas ao cliente como respostas HTTP completas. Ao contrário das soluções anteriores, o FortiGate não depende de manipulação de DNS ou de proxies explícitos para exibir mensagens de bloqueio, ele atua diretamente no tráfego, com **inspeção profunda de pacotes (DPI)** e resposta imediata, o que aumenta a chance de a página ser refletida até o destino forjado em ataques de amplificação.
+
+Além disso, o FortiGate permite um **controle mais granular das políticas de segurança e respostas**, com ferramentas específicas para personalização de mensagens de bloqueio, análise de sessões e tratamento de conexões baseadas em comportamento. Esses recursos tornam a solução mais adequada para testes de segurança avançados e para a análise de como middleboxes interagem com tráfego forjado.
+
+Portanto, o uso do **FortiGate** representou uma evolução na metodologia experimental, oferecendo maior controle e visibilidade sobre o tráfego, além de um potencial mais elevado de gerar respostas refletidas úteis para o estudo de ataques de amplificação TCP baseados em middleboxes.
+
+O FortiGate foi configurado com regras de firewall semelhantes às criadas no pfSense, conforme ilustrado nas imagens a seguir, que correspondem, respectivamente, às seguintes políticas:
+
+- Uma regra que permite o recebimento de pacotes ICMP (ping) originados de máquinas externas (rede WAN) para máquinas internas da rede LAN;  
+- Uma regra que permite o tráfego de saída de máquinas internas (rede LAN) para a rede externa (rede WAN) por meio do FortiGate.  
+
+<img width="515" height="411" alt="firewall_policy_ping_wan_lan" src="https://github.com/user-attachments/assets/8ac08b55-9c57-4d6a-8880-24aa29e2ffa3" />
+
+<img width="515" height="413" alt="firewall_policy_lan_wan" src="https://github.com/user-attachments/assets/8afec0d7-e85d-4bc5-90d7-39353ee42454" />
+
+Para o bloqueio de sites proibidos, foi criado um perfil de **Web Filter**, que foi posteriormente aplicado às regras de acesso da LAN, conforme mostrado na imagem a seguir.  
+
+<img width="663" height="614" alt="sites_proibidos_fortigate" src="https://github.com/user-attachments/assets/1699794d-8796-47ec-bcf8-128ba2b44732" />
