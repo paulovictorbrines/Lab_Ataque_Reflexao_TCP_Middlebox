@@ -169,7 +169,7 @@ A configuração de rede da máquina virtual do firewall foi definida da seguint
 
 Foi configurado o **NAT Outbound** para redirecionar o tráfego da rede LAN para a interface WAN, simulando a saída da rede interna para a externa por meio do firewall, conforme imagem a seguir.  
 
-<img width="1442" height="184" alt="rules_nat" src="https://github.com/user-attachments/assets/49ffa326-0630-4991-97a9-315a1b267930" />
+<img width="815" height="184" alt="rules_nat" src="https://github.com/user-attachments/assets/49ffa326-0630-4991-97a9-315a1b267930" />
 
 As regras de firewall configuradas para a interface **WAN** incluem:  
 
@@ -178,7 +178,7 @@ As regras de firewall configuradas para a interface **WAN** incluem:
 - Uma regra que permite o acesso externo ao servidor **Web** do alvo pela porta 80/TCP, simulando sua exposição pública;  
 - Uma regra que permite que máquinas da rede interna acessem livremente todos os sites, sendo posteriormente restringidas pelas soluções de filtragem do **pfBlockerNG** e **squidGuard**, responsáveis por bloquear domínios como `youporn.com`, `facebook.com`, `pornhub.com` e `bittorrent.com`, processadas antes dessa regra.  
 
-<img width="1152" height="333" alt="rules_wan" src="https://github.com/user-attachments/assets/6903a8bd-f9bd-4b4f-9c5c-5aeb7c7e8e5d" />
+<img width="815" height="333" alt="rules_wan" src="https://github.com/user-attachments/assets/6903a8bd-f9bd-4b4f-9c5c-5aeb7c7e8e5d" />
 
 Para a interface **LAN**, as regras estão configuradas conforme imagem a seguir, contendo por padrão:  
 
@@ -186,7 +186,7 @@ Para a interface **LAN**, as regras estão configuradas conforme imagem a seguir
 - A regra `default allow LAN to any`, permitindo tráfego de saída irrestrito da LAN;  
 - A regra `default allow LAN IPv6 to any`, com comportamento equivalente para tráfego IPv6.  
 
-<img width="1153" height="242" alt="rules_lan" src="https://github.com/user-attachments/assets/d028f47a-7e66-4e3e-9e52-760c1bd751a2" />
+<img width="815" height="242" alt="rules_lan" src="https://github.com/user-attachments/assets/d028f47a-7e66-4e3e-9e52-760c1bd751a2" />
 
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 
@@ -198,11 +198,11 @@ O **pfBlockerNG** é um pacote adicional do pfSense para bloquear domínios e IP
 
 Para bloquear sites, foi adicionada uma regra explícita de `DROP` para pacotes da rede interna com destino a IPs de sites proibidos (como `youporn.com`, `pornhub.com`, etc.), obtidos de listas no pfBlockerNG.
 
-<img width="1446" height="155" alt="rule_ips_proibidos" src="https://github.com/user-attachments/assets/b0cebe52-fbb3-4343-a828-120b87dd0bef" />
+<img width="815" alt="rule_ips_proibidos" src="https://github.com/user-attachments/assets/b0cebe52-fbb3-4343-a828-120b87dd0bef" />
 
 O pacote também exibe uma página de bloqueio local, mas não realiza o redirecionamento real da requisição. Como o pfBlockerNG não reflete o conteúdo para um alvo externo, ele **não foi útil para o ataque de amplificação**. O bloqueio ocorre de forma local e não interage com o destino final do tráfego.
 
-<img width="1293" height="223" alt="bloqueio_pfblockerng" src="https://github.com/user-attachments/assets/3a5106be-4c42-41f2-9d47-06a63efcfaa4" />
+<img width="815" alt="bloqueio_pfblockerng" src="https://github.com/user-attachments/assets/3a5106be-4c42-41f2-9d47-06a63efcfaa4" />
 
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 
@@ -214,9 +214,9 @@ O **Squid** é um proxy de cache para a web, e o **SquidGuard** é um redirecion
 
 O SquidGuard foi o componente principal deste experimento porque permite o **redirecionamento real da requisição**, alterando a URL e enviando a página de bloqueio para o usuário. Para isso, foi criada uma lista de `target categories` no SquidGuard para os sites proibidos.
 
-<img width="1058" height="218" alt="bloqueio_squid" src="https://github.com/user-attachments/assets/11a85cd5-acad-4508-8b9c-e31fa68097c7" />
+<img width="815" alt="bloqueio_squid" src="https://github.com/user-attachments/assets/11a85cd5-acad-4508-8b9c-e31fa68097c7" />
 
-<img width="1158" height="463" alt="sites_proibidos" src="https://github.com/user-attachments/assets/0edf68a8-8c05-42c0-a4c4-b563f7638112" />
+<img width="815" alt="sites_proibidos" src="https://github.com/user-attachments/assets/0edf68a8-8c05-42c0-a4c4-b563f7638112" />
 
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
 
@@ -255,10 +255,10 @@ O FortiGate foi configurado com regras de firewall semelhantes às criadas no pf
 - Uma regra que permite o recebimento de pacotes ICMP (ping) originados de máquinas externas (rede WAN) para máquinas internas da rede LAN;  
 - Uma regra que permite o tráfego de saída de máquinas internas (rede LAN) para a rede externa (rede WAN) por meio do FortiGate.  
 
-<img width="515" height="411" alt="firewall_policy_ping_wan_lan" src="https://github.com/user-attachments/assets/8ac08b55-9c57-4d6a-8880-24aa29e2ffa3" />
+<img width="415" alt="firewall_policy_ping_wan_lan" src="https://github.com/user-attachments/assets/8ac08b55-9c57-4d6a-8880-24aa29e2ffa3" />
 
-<img width="515" height="413" alt="firewall_policy_lan_wan" src="https://github.com/user-attachments/assets/8afec0d7-e85d-4bc5-90d7-39353ee42454" />
+<img width="415" alt="firewall_policy_lan_wan" src="https://github.com/user-attachments/assets/8afec0d7-e85d-4bc5-90d7-39353ee42454" />
 
 Para o bloqueio de sites proibidos, foi criado um perfil de **Web Filter**, que foi posteriormente aplicado às regras de acesso da LAN, conforme mostrado na imagem a seguir.  
 
-<img width="663" height="614" alt="sites_proibidos_fortigate" src="https://github.com/user-attachments/assets/1699794d-8796-47ec-bcf8-128ba2b44732" />
+<img width="415" alt="sites_proibidos_fortigate" src="https://github.com/user-attachments/assets/1699794d-8796-47ec-bcf8-128ba2b44732" />
