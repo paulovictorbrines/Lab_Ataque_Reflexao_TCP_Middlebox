@@ -224,7 +224,7 @@ O pacote também exibe uma página de bloqueio local, mas não realiza o redirec
 <br>
 
 
-Página de bloqueio do pacote pfBlockerNG no pfSense.
+Página de bloqueio do pacote pfBlockerNG no pfSense:
 
 <img width="815" alt="bloqueio_pfblockerng" src="https://github.com/user-attachments/assets/3a5106be-4c42-41f2-9d47-06a63efcfaa4" />
 <br>
@@ -246,7 +246,7 @@ O SquidGuard permite o redirecionamento real da requisição, alterando a URL e 
 <br>
 
 
-Página de bloqueio do pacote SquidGuard no pfSense.
+Página de bloqueio do pacote SquidGuard no pfSense:
 
 <img width="815" alt="bloqueio_squid" src="https://github.com/user-attachments/assets/11a85cd5-acad-4508-8b9c-e31fa68097c7" />
 <br>
@@ -302,7 +302,7 @@ Para o bloqueio de sites proibidos, foi criado um perfil de Web Filter, que foi 
 <br>
 
 
-Página de bloqueio do FortiGate.
+Página de bloqueio do FortiGate:
 
 <img width="815" alt="bloqueio_fortigate" src="https://github.com/user-attachments/assets/5d3aaa28-f90c-42c9-a15f-4c211affe61e" />
 <br>
